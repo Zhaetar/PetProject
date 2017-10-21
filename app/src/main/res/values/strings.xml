@@ -1,8 +1,9 @@
 <resources>
 
-    <string name="app_name">PetProject</string>
+    <string name="app_name">Pet Pet</string>
     <string name="desc1">Este é o seu perfil. \n
-        Aqui você confere seu nivel e progresso.</string>
+        Aqui você confere seu nível e progresso.</string>
+    <string name="change_pet_image">Clique aqui para trocar a imagem do seu mascote.</string>
 
 
 </resources>
