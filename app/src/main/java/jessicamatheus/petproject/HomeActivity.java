@@ -1,24 +1,18 @@
 package jessicamatheus.petproject;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,80 +22,96 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import static android.content.ContentValues.TAG;
 
 
 public class HomeActivity extends Activity {
+    //Variaveis
+    public static final int PICK_PHOTO = 1;
+    public Boolean CUSTOM_PHOTO_EXISTS = false;
+    public int Level = 0;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home); //Aonde começa o app.
 
         //// TODO: 20/10/2017 criar clsse para level
-        //Nivel
-        int levelnumb = 0;
-        levelUp(levelnumb);
         //Coloca o texto no botão do nivel
-        Button levelbutton = (Button) findViewById(R.id.level_button);
-        levelbutton.setText(""+levelnumb);
+        levelUp();
 
-        //Botão clicável
+        //Checar se tem foto antiga, e se tiver colocar ela.
+        SharedPreferences mPrefs = getSharedPreferences("CUSTOM_PHOTO_EXISTS", 0);
+        Boolean CUSTOM_PHOTO_EXISTS = mPrefs.getBoolean("CUSTOM_PHOTO_EXISTS", false);
+        if(CUSTOM_PHOTO_EXISTS){
+             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/PetPet/Cache/Pet.JPEG");
+            String filePath = file.getPath();
+            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+
+            ImageView imageView = (ImageView) findViewById(R.id.pet_round_image);
+            imageView.setImageBitmap(bitmap);
+        }
+
+        //Botão de teste.
         final Button levelButton = (Button) findViewById(R.id.level_button);
+        levelUp();
         levelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                sendNotification(v, "Acaricie seu mascote", "Ele precisa do seu carinho!", 001); //Manda a notificação
+                sendBasicNotification(v, "Acaricie seu mascote", "Ele precisa do seu carinho!", 001); //Manda a notificação
                 sendToast("Notificação criada com sucesso.");
             }
         });
 
-        final Button petPicture = (Button) findViewById(R.id.change_pet_image);
+        final de.hdodenhof.circleimageview.CircleImageView petPicture =
+                (de.hdodenhof.circleimageview.  CircleImageView) findViewById(R.id.pet_round_image);
         petPicture.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pickImage();
+                try {
+                    pickImage();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
-    }
+    }//Fim do inicio do sistema.
 
-    public void sendNotification(View view, String title, String text, int id) {
-        //Intent intent = new Intent(HomeActivity.class, Uri.parse("https://www.androidauthority.com/"));
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        NotificationCompat.Builder mBuilder =
+    public void sendBasicNotification(View view, String title, String text, int id) {
+        PetNotification.notify(this.getApplicationContext(), "Your pet could use some attention!", 202);
+        /*NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.paw)
                         .setContentTitle(title)
                         .setContentText(text);
-        //mBuilder.setContentIntent(pendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(id, mBuilder.build());
-    }
+        mNotificationManager.notify(id, mBuilder.build());*/
+    }//Fim do Send Notification
 
     public void sendToast(String texto){
         Toast.makeText(HomeActivity.this, texto, Toast.LENGTH_LONG).show();
+    }//Fim do Send Toast
+
+    public void levelUp(){
+        final Button levelButton = (Button) findViewById(R.id.level_button);
+        Level++;
+        levelButton.setText(""+Level);
     }
 
-    public void levelUp(int levelnumb){
-        levelnumb ++;
-    }
-
-    public static final int PICK_PHOTO = 1;
 
     public void pickImage() throws InterruptedException {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_PHOTO);
 
-    }
+    }//Fim do Pick Image (// TODO: 22/10/2017 adicionar a opção para usar outros aplicativos além da galeria.
 
     @Override
+    //O que isso faz? Ele é o que o programa pega quando volta pro app com alguma data. Então é essa função que
+    //manuseia a imagem pega na galeria.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_PHOTO && resultCode == Activity.RESULT_OK) {
             if (data == null) {
-                sendToast("Error!");
+                sendToast("Erro ao selecionar uma imagem.");
                 return;
             }
             Uri uri = data.getData();
@@ -112,87 +122,41 @@ public class HomeActivity extends Activity {
                 ImageView imageView = (ImageView) findViewById(R.id.pet_round_image);
                 imageView.setImageBitmap(bitmap);
 
-                storeImage(bitmap);
-                sendToast("Imagem salva carai");
-/*
-                store
-                String FILENAME = "PETPET_PetImage";
-
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-                fos.write();
-                if(isStoragePermissionGranted()){
-                    SaveImage(bitmap)
-                }
-                openFileOutput()*/
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                SaveImage(bitmap, this);
+                CUSTOM_PHOTO_EXISTS = true;
+                SharedPreferences mPrefs = getSharedPreferences("CUSTOM_PHOTO_EXISTS", 0);
+                SharedPreferences.Editor mEditor = mPrefs.edit();
+                mEditor.putBoolean("CUSTOM_PHOTO_EXISTS", CUSTOM_PHOTO_EXISTS).commit();
+            } catch (IOException e) {e.printStackTrace();}
         }
-    }
-
-    public void buttonClick(View v)
-    {
-    }
-
-    private void storeImage(Bitmap image) {
-        File pictureFile = getOutputMediaFile();
-        if (pictureFile == null) {
-            Log.d(TAG,
-                    "Error creating media file, check storage permissions: ");// e.getMessage());
+        else{
+            sendToast("Error!");
             return;
         }
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d(TAG, "Error accessing file: " + e.getMessage());
-        }
-    }
+    }//Fim do onActivityReult
 
-    private  File getOutputMediaFile(){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir = new File(Environment.getDataDirectory()
-        //        + "/Android/data/"
-          //      + getApplicationContext().getPackageName()
-            //    + "/Files");
-                + "/Teste/");
+    private static void SaveImage(Bitmap finalBitmap, Activity Activity) {
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+            //Caminho do folder aonde será salvo a imagem.
+            File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+
+                    "/PetPet/Cache/");
+            //Vê se exite o folder, se não existir, cria ele.
+            if (! mediaStorageDir.exists()){
+                if (! mediaStorageDir.mkdirs()){
+                    return;}}
+            FileOutputStream dest = null;
+            //Caminho do folder aonde será salvo a imagem.
+            try {dest = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/PetPet/Cache/Pet.JPEG");
+            } catch (FileNotFoundException e) {e.printStackTrace();}
 
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
+            //Salva em JPEG.
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, dest);
+            try {dest.flush();
+            } catch (IOException e) {e.printStackTrace();}
+            try {dest.close();
+            } catch (IOException e) {e.printStackTrace();}
 
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                return null;
-            }
-        }
-        // Create a media file name
-        File mediaFile;
-        String mImageName="PetImage.jpg";
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
-    }
-    private static void SaveImage(Bitmap finalBitmap) {
-
-        String root = Environment.getRootDirectory().getAbsolutePath();
-        File myDir = new File(root + "/Pictures/saved_images");
-        myDir.mkdirs();
-
-        String fname = ("Image.jpg");
-        File file = new File (myDir, fname);
-        if (file.exists ()) file.delete ();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+        } else{return;} //Caso não tenha permissão, voltar.
+    }//Fim do Save Image.
+}//Fim do Arquivo.

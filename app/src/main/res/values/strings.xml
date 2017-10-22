@@ -1,9 +1,17 @@
 <resources>
 
     <string name="app_name">Pet Pet</string>
+    <string name="pet_name">Mascote</string>
     <string name="desc1">Este é o seu perfil. \n
-        Aqui você confere seu nível e progresso.</string>
+        Aqui você confere seu nível e pode mudar a foto do seu mascote clicando na imagem.</string>
     <string name="change_pet_image">Clique aqui para trocar a imagem do seu mascote.</string>
+
+    <string name="pet_notification_title_template">%1$s</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="pet_notification_placeholder_text_template">Give your pet some love!</string>
+    <string name="action_accept">Accept</string>
+    <string name="action_deny">Maybe later</string>
 
 
 </resources>
