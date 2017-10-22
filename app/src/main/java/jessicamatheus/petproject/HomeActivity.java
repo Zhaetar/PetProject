@@ -1,9 +1,6 @@
 package jessicamatheus.petproject;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,11 +9,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,19 +27,29 @@ public class HomeActivity extends Activity {
     //Variaveis
     public static final int PICK_PHOTO = 1;
     public Boolean CUSTOM_PHOTO_EXISTS = false;
-    public int Level = 0;
+    public int Level = 1;
+    public int Experience = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home); //Aonde começa o app.
 
-        //// TODO: 20/10/2017 criar clsse para level
-        //Coloca o texto no botão do nivel
-        levelUp();
-
+        //Checar se tem nivel antigo, e se tiver carregar ele
+        SharedPreferences savedLevel = getSharedPreferences("LEVEL", 0);
+        Level = savedLevel.getInt("LEVEL", 1);
+        //Load Experience Value
+        SharedPreferences savedExperience = getSharedPreferences("LEVEL", 0);
+        Experience = savedLevel.getInt("EXPERIENCE", 0);
+        CircularProgressBar ProgressBar = (CircularProgressBar) findViewById(R.id.level_progress);
+        ProgressBar.setProgress(Experience);
         //Checar se tem foto antiga, e se tiver colocar ela.
-        SharedPreferences mPrefs = getSharedPreferences("CUSTOM_PHOTO_EXISTS", 0);
-        Boolean CUSTOM_PHOTO_EXISTS = mPrefs.getBoolean("CUSTOM_PHOTO_EXISTS", false);
+        SharedPreferences savedPhoto = getSharedPreferences("CUSTOM_PHOTO_EXISTS", 0);
+        Boolean CUSTOM_PHOTO_EXISTS = savedPhoto.getBoolean("CUSTOM_PHOTO_EXISTS", false);
+
+        //Coloca o texto no botão do nivel
+        final Button levelButton = (Button) findViewById(R.id.level_button);
+        levelButton.setText(""+Level);
+
         if(CUSTOM_PHOTO_EXISTS){
              File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/PetPet/Cache/Pet.JPEG");
@@ -52,12 +61,16 @@ public class HomeActivity extends Activity {
         }
 
         //Botão de teste.
-        final Button levelButton = (Button) findViewById(R.id.level_button);
-        levelUp();
         levelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                sendBasicNotification(v, "Acaricie seu mascote", "Ele precisa do seu carinho!", 001); //Manda a notificação
-                sendToast("Notificação criada com sucesso.");
+                //setContentView(R.layout.petinterface); //Aonde começa o app.
+                //sendBasicNotification(v, "Acaricie seu mascote", "Ele precisa do seu carinho!", 001); //Manda a notificação
+                //sendToast("Notificação criada com sucesso.");
+                try {
+                    levelUp();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -75,25 +88,37 @@ public class HomeActivity extends Activity {
     }//Fim do inicio do sistema.
 
     public void sendBasicNotification(View view, String title, String text, int id) {
-        PetNotification.notify(this.getApplicationContext(), "Your pet could use some attention!", 202);
-        /*NotificationCompat.Builder mBuilder =
-                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.paw)
-                        .setContentTitle(title)
-                        .setContentText(text);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(id, mBuilder.build());*/
+        PetNotification.notify(this.getApplicationContext(), "Your pet could use some attention!", 1);
     }//Fim do Send Notification
 
     public void sendToast(String texto){
         Toast.makeText(HomeActivity.this, texto, Toast.LENGTH_LONG).show();
     }//Fim do Send Toast
 
-    public void levelUp(){
+    public void levelUp() throws InterruptedException {
+        Experience += 30;
+        CircularProgressBar ProgressBar = (CircularProgressBar) findViewById(R.id.level_progress);
+        if(Experience < 100)
+            ProgressBar.setProgressWithAnimation(Experience,500);
+        else
+            ProgressBar.setProgressWithAnimation(100,500);
+        while(Experience>=100){
+            Level++;
+            ProgressBar.setProgressWithAnimation(0);
+            Experience -= 100;
+            if(Experience > 0){
+                Thread.sleep(1000);ProgressBar.setProgressWithAnimation(Experience);};
+        }
         final Button levelButton = (Button) findViewById(R.id.level_button);
-        Level++;
         levelButton.setText(""+Level);
+
+        SharedPreferences saveLevel = getSharedPreferences("LEVEL", 0);
+        SharedPreferences.Editor mEditor = saveLevel.edit();
+        mEditor.putInt("LEVEL", Level).commit();
+
+        SharedPreferences saveExperience = getSharedPreferences("EXPERIENCE", 0);
+        mEditor = saveExperience.edit();
+        mEditor.putInt("EXPERIENCE", Experience).commit();
     }
 
 
