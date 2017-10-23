@@ -3,12 +3,16 @@
     <string name="app_name">Pet Pet</string>
     <string name="pet_name">Mascote</string>
     <string name="desc1">Este é o seu perfil. \n
-        Aqui você confere seu nível e pode mudar a foto do seu mascote clicando na imagem.</string>
+        Aqui você confere seu nível e progresso.</string>
 
     <string name="pet_notification_title_template">%1$s</string>
-
-    <!-- TODO: remove this placeholder text -->
     <string name="pet_notification_placeholder_text_template">Give your pet some love!</string>
 
+    <string name="test1">Send Notification</string>
+    <string name="test2">Send Toast</string>
+    <string name="test3">Level Up</string>
+    <string name="test4">Home</string>
+    <string name="test5">Send Notification</string>
+    <string name="test6">Send Notification</string>
 
 </resources>
