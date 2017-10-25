@@ -24,18 +24,21 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.mikhaellopez:circularprogressbar:1.0.0'
     compile 'com.github.CardinalNow:Android-CircleProgressIndicator:v0.2'
-
-
+    compile 'com.github.glomadrian:Grav:1.1'
+    compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }
+
 
 repositories {
     // ...
     maven { url "https://jitpack.io" }
+    maven { url "http://dl.bintray.com/glomadrian/maven" }
 }

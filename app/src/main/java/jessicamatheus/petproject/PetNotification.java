@@ -49,7 +49,6 @@ public class PetNotification {
         // TODO: Remove this if your notification has no relevant thumbnail.
         //final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.example_picture);
 
-
         final String ticker = exampleString;
         final String title = res.getString(
                 R.string.pet_notification_title_template, exampleString);
@@ -96,12 +95,20 @@ public class PetNotification {
 
                 // Set the pending intent to be initiated when the user touches
                 // the notification.
-                .setContentIntent(
+                /*.setContentIntent(
                         PendingIntent.getActivity(
                                 context,
                                 0,
                                 new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com")),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
+                                PendingIntent.FLAG_UPDATE_CURRENT)
+                )*/
+
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                context,
+                                0,
+                                new Intent(context, HomeActivity.class).putExtra("showAlertDialog", 5), PendingIntent.FLAG_UPDATE_CURRENT)
+                )
 
                 // Example additional actions for this notification. These will
                 // only show on devices running Android 4.1 or later, so you
