@@ -44,7 +44,6 @@
         android:text="@string/test3"/>
 
     <Button
-        android:id="@+id/testButton5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_corners"

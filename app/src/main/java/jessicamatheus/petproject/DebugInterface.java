@@ -1,6 +1,9 @@
 package jessicamatheus.petproject;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,27 +23,39 @@ public class DebugInterface extends Activity {
         final Button testButton1 = (Button) findViewById(R.id.testButton1);
         testButton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                HA.sendBasicNotification(v, "Acaricie seu mascote", "Ele precisa do seu carinho!", 001); //Manda a notificação
+                HA.sendBasicNotification(DebugInterface.this, "Acaricie seu mascote"); //Manda a notificação
             }
         });
         final Button testButton2 = (Button) findViewById(R.id.testButton2);
         testButton2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                HA.sendToast("Toast!");
+                HA.sendToast(DebugInterface.this, "Toast!");
             }
         });
         final Button testButton3 = (Button) findViewById(R.id.testButton3);
         testButton3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                HA.addExperience(20);
+                addExperience(20);
             }
         });
         final Button testButton4 = (Button) findViewById(R.id.testButton4);
         testButton4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { //Ao clicar no botão..
-                setContentView(R.layout.activity_home); //Aonde começa o app.
+                Intent intent = new Intent(DebugInterface.this, HomeActivity.class);
+                startActivity(intent);
             }
         });
+    }
+
+    public void addExperience(int experience){
+        SharedPreferences savedExperience = getSharedPreferences("EXPERIENCE", 0);
+        int Experience = savedExperience.getInt("EXPERIENCE", 0);
+
+        Experience+= experience;
+
+        SharedPreferences saveExperience    = getSharedPreferences("EXPERIENCE", 0);
+        SharedPreferences.Editor mEditor = saveExperience.edit();
+        mEditor.putInt("EXPERIENCE", Experience).apply();
     }
 
 

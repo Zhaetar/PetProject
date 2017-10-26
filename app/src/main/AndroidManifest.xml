@@ -43,10 +43,6 @@
         </activity>
         <activity android:name=".PetAcceptInterface"></activity>
         <activity android:name=".DebugInterface"></activity>
-        <activity
-            android:name=".LateralMenu"
-            android:label="@string/title_activity_lateral_menu"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
