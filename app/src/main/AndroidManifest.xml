@@ -41,8 +41,9 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".PetAcceptInterface"></activity>
-        <activity android:name=".DebugInterface"></activity>
+        <activity android:name=".PetAcceptInterface" />
+        <activity android:name=".DebugInterface" />
+        <receiver android:name=".NotificationPublisher" />
     </application>
 
 </manifest>
